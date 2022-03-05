@@ -1,6 +1,7 @@
 # [Wireguard](https://www.wireguard.com) configuration file generator for a [NordVPN](https://nordvpn.com)
 
 A `bash` scripts that generates [Wireguard](https://www.wireguard.com) configuration file for a [NordVPN](https://nordvpn.com) connection.
+NOW WITH MIKROTIK!
 
 ## INSTALL
 
