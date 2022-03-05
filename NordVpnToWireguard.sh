@@ -104,10 +104,25 @@ echo "AllowedIPs = 0.0.0.0/0" >> Nordvpn.conf
 echo "Endpoint = $endpoint:51820" >> Nordvpn.conf
 
 # Renaming config file to show the endpoint country id and server number
-outputFileName=`echo $endpoint |  grep -o '^[^.]*'`
-outputFileName=`echo "NordVPN-$outputFileName.conf"`
+endpointName=`echo $endpoint |  grep -o '^[^.]*'`
+confFileName=`echo "NordVPN-$endpointName.conf"`
+mikrotikFileName=`echo "mikrotik-nordlynx-$endpointName.rsc"`
 
-mv Nordvpn.conf $outputFileName
+mv Nordvpn.conf $confFileName
 
-echo "Wireguard configuration file $outputFileName created successfully!"
+# Create Mikrotik Interface - Needs the secret key
+echo "/interface/wireguard/add name=nordlynx disabled=yes private-key=\"$privateKey\"" > mikrotik-nordlynx.rsc
+echo "/ip/address/add address=$localAddress/30 interface=nordlynx" >> mikrotik-nordlynx.rsc
+
+# Add the peer with the public key.
+echo "/interface/wireguard/peers/" > mikrotik_peer.rsc
+echo "add allowed-address=0.0.0.0/0 disabled=yes endpoint-address=$endpoint endpoint-port=51820 interface=nordlynx  persistent-keepalive=25s public-key=\"$publicKey\"" >> mikrotik_peer.rsc
+
+
+mv mikrotik_peer.rsc $mikrotikFileName
+
+echo "Wireguard configuration file $confFileName created successfully!"
+echo "MikroTik configuration scripts for interface: mikrotik-nordlynx.rsc created sucessfully!"
+echo "MikroTik configuration scripts for peer: $mikrotikFileName created successfully!"
+
 exit 0
